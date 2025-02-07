@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Welcome to the Homepage!</h1>
+    <p>This is a simple FastAPI application with SQLite database.</p>
+
+    <h2>Add a Note</h2>
+    <form id="noteForm">
+        <input type="text" id="content" placeholder="Enter note content">
+        <button type="submit">Add Note</button>
+    </form>
+
+    <h2>Notes</h2>
+    <ul id="notesList"></ul>
+
+    <script>
+        // Load notes on page load
+        fetch('/notes')
+            .then(response => response.json())
+            .then(notes => {
+                const notesList = document.getElementById('notesList');
+                notes.forEach(note => {
+                    const li = document.createElement('li');
+                    li.textContent = note.content;
+                    notesList.appendChild(li);
+                });
+            });
+
+        // Handle form submission
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = document.getElementById('content').value;
+            
+            await fetch(`/notes?content=${encodeURIComponent(content)}`, {
+                method: 'POST'
+            });
+
+            // Reload page to show new note
+            location.reload();
+        });
+    </script>
+</body>
+</html>
